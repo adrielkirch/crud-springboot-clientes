@@ -2,6 +2,7 @@ package br.unisul.trabalho.springboot.services;
 
 import java.util.Optional;
 
+import br.unisul.trabalho.springboot.modelo.Cliente;
 import br.unisul.trabalho.springboot.modelo.Endereco;
 
 public interface EnderecoService {
@@ -14,4 +15,5 @@ public interface EnderecoService {
 	
 	public void removerPorId(Long id);
 	
+	public Cliente obterClienteVinculado(Long id);
 }

@@ -12,9 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Entity 
 @Table (name = "cliente")
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class Cliente implements Serializable{
 	
 	private static final long serialVersionUID = -1231391146194508024L;
@@ -26,7 +29,7 @@ public class Cliente implements Serializable{
 	private String complemento;
 	private Integer numero;
 	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne
     @JoinColumn(name = "id_endereco", referencedColumnName = "id")
 	private Endereco endereco;
 

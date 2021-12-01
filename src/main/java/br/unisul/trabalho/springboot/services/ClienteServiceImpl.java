@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 
 import br.unisul.trabalho.springboot.modelo.Cliente;
 import br.unisul.trabalho.springboot.repositorio.ClienteRepositorio;
+import br.unisul.trabalho.springboot.repositorio.EnderecoRepositorio;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
 	@Autowired
 	private ClienteRepositorio clienteRepositorio;
+
 
 	@Override
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -39,6 +41,6 @@ public class ClienteServiceImpl implements ClienteService {
 	public void removerPorId(Long id) {
 		clienteRepositorio.deleteById(id);
 	}
-	
+
 
 }
