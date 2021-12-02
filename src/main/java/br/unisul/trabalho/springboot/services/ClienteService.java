@@ -14,4 +14,6 @@ public interface ClienteService {
 	
 	public void removerPorId(Long id);
 	
+	public String obterClientesPorCidadeEstado(String cidade,String uf);
+	
 }

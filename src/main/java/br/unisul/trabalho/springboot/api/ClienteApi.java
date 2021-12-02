@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import com.google.gson.JsonObject;
 
 import br.unisul.trabalho.springboot.modelo.Cliente;
 import br.unisul.trabalho.springboot.modelo.Endereco;
+import br.unisul.trabalho.springboot.repositorio.ClienteRepositorio;
 import br.unisul.trabalho.springboot.repositorio.EnderecoRepositorio;
 import br.unisul.trabalho.springboot.services.ClienteService;
 import br.unisul.trabalho.springboot.services.ClienteServiceImpl;
@@ -30,12 +32,14 @@ import br.unisul.trabalho.springboot.services.EnderecoService;
 
 @RestController
 @RequestMapping("/api/cliente")
+@CrossOrigin(origins = "*")
 public class ClienteApi {
 
 	@Autowired
 	private ClienteService clinteService;
 	@Autowired
 	private EnderecoService enderecoService;
+
 
 	public ClienteApi() {
 
@@ -88,20 +92,23 @@ public class ClienteApi {
 		return ResponseEntity.status(HttpStatus.OK).body(clinteService.salvar(cliente.get()));
 	}
 	
-//	@PutMapping("/vincular-endereco/{idCliente}/{idEndereco}")
-//	public ResponseEntity<?> vincularEndereco(@PathVariable Map<Long, Long> pathVarsMap) {
-//		Optional<Cliente> cliente = clinteService.obterPorId(pathVarsMap.get("idCliente"));
-//		if (!cliente.isPresent()) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\":\"Cliente não encontrado\"}");
-//		}
-//		Optional<Endereco> endereco = enderecoService.obterPorId(pathVarsMap.get("idEndereco"));
-//		if(!endereco.isPresent()) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\":\"Endereco não encontrado\"}");
-//		}
-//		
-//		cliente.get().setEndereco(endereco.get());
-//		return ResponseEntity.status(HttpStatus.OK).body(clinteService.salvar(cliente.get()));
-//	}
+	@PutMapping("/vincular-endereco/{idCliente}/{idEndereco}")
+	public ResponseEntity<?> vincularEndereco(@PathVariable Map<String, String> pathVarsMap) {
+		String idCliente = pathVarsMap.get("idCliente");
+		String idEndereco = pathVarsMap.get("idEndereco");
+			
+		Optional<Cliente> cliente = clinteService.obterPorId(Long.parseLong(idCliente));
+		if (!cliente.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\":\"Cliente não encontrado\"}");
+		}
+		Optional<Endereco> endereco = enderecoService.obterPorId(Long.parseLong(idEndereco));
+		if(!endereco.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\":\"Endereco não encontrado\"}");
+		}
+		
+		cliente.get().setEndereco(endereco.get());
+		return ResponseEntity.status(HttpStatus.OK).body(clinteService.salvar(cliente.get()));
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> remover(@PathVariable(value = "id") Long id) {
@@ -116,14 +123,14 @@ public class ClienteApi {
 	@GetMapping("/buscar-cidade/{uf}/{cidade}")
 	public ResponseEntity<?> buscarCidade(@PathVariable Map<String, String> pathVarsMap) {
 		String cidade = pathVarsMap.get("cidade");
-		String uf = pathVarsMap.get("uf");
-		if( cidade == null || uf == null) {
+		String uf = pathVarsMap.get("uf");	
+		String jsonStr = clinteService.obterClientesPorCidadeEstado(cidade, uf);
+		
+		if(jsonStr == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"message\":\"Bad request 404\"}");
 		}
-		JsonObject mainJson = new JsonObject();
-		mainJson.addProperty("cidade", cidade);
-		mainJson.addProperty("uf", uf);
-		return ResponseEntity.status(HttpStatus.OK).body("{\"message\":\"AQUI\"}");
+		
+		return ResponseEntity.status(HttpStatus.OK).body(jsonStr);
 	}
 	
 	
